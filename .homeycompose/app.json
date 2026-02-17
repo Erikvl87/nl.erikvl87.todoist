@@ -1,6 +1,6 @@
 {
   "id": "nl.jwienk.todoist",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#db4035",
