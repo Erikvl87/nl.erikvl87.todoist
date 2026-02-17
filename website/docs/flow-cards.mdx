@@ -1,0 +1,417 @@
+---
+title: Flow Cards
+sidebar_position: 2
+---
+
+import FlowCard from '@site/src/components/FlowCard';
+
+# Flow Cards
+
+The Todoist app provides flow cards to automate your task management through Homey. These include trigger cards (When...), condition cards (And...), and action cards (Then...).
+
+## Triggers (When...)
+
+Trigger cards start a flow when a specific event occurs.
+
+### A task was...
+
+Triggers when a task is completed or uncompleted in Todoist. Events are delivered via webhooks and may have a slight delay of 0 to 30 seconds.
+
+<FlowCard
+  data={{
+    title: { en: "A task was..." },
+    titleFormatted: { en: "A task was [[event_name]]" },
+    hint: { en: "Events might have slight delays (0-30sec)." },
+    args: [
+      {
+        type: "dropdown",
+        name: "event_name",
+        title: { en: "Event" },
+        values: [
+          { id: "item:completed", label: { en: "Completed" } },
+          { id: "item:uncompleted", label: { en: "Uncompleted" } }
+        ]
+      }
+    ],
+    tokens: [
+      { name: "content", type: "string", title: { en: "Content" }, example: { en: "Do the laundry" } }
+    ]
+  }}
+/>
+
+Tokens provided:
+
+| Token | Type | Description |
+|-------|------|-------------|
+| Content | String | The text content of the task that was completed or uncompleted. |
+
+### Tasks are fetched for project...
+
+Triggers when tasks have been fetched for a specific project using the "Fetch project tasks" action card. Use this to process the fetched task list in your flow.
+
+<FlowCard
+  data={{
+    title: { en: "Tasks are fetched for project..." },
+    titleFormatted: { en: "Tasks for [[project]] are fetched" },
+    hint: { en: "Use a Then card to fetch tasks for a project." },
+    args: [
+      {
+        type: "autocomplete",
+        name: "project",
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      }
+    ],
+    tokens: [
+      { name: "tasks", type: "string", title: { en: "Tasks" }, example: { en: "Do the laundry" } }
+    ]
+  }}
+/>
+
+Tokens provided:
+
+| Token | Type | Description |
+|-------|------|-------------|
+| Tasks | String | A formatted list of all tasks in the project, including due dates where applicable. |
+
+## Conditions (And...)
+
+Condition cards check whether a specific requirement is met before continuing the flow.
+
+### Task with filter exists...
+
+Checks whether any task matching the given filter text exists. You can optionally restrict the search to a specific project.
+
+<FlowCard
+  data={{
+    title: { en: "Task with filter exists..." },
+    titleFormatted: { en: "Task with [[filter]] !{{exists|does not exist}} in [[project]]" },
+    hint: { en: "Checks if any task with the filter exists. There might be multiple tasks that match." },
+    args: [
+      {
+        type: "text",
+        name: "filter",
+        title: { en: "Filter" },
+        placeholder: { en: "Do the laundry" }
+      },
+      {
+        type: "autocomplete",
+        name: "project",
+        required: false,
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      }
+    ]
+  }}
+/>
+
+:::tip
+
+Use a specific filter to avoid false positives. The filter searches task content text. If no project is selected, all projects are searched.
+
+:::
+
+## Actions (Then...)
+
+Action cards perform tasks when a flow runs.
+
+### Create a project task
+
+Creates a new task in the selected Todoist project with an optional priority and assignee.
+
+<FlowCard
+  data={{
+    title: { en: "Create a project task..." },
+    titleFormatted: { en: "Create a task [[content]] in [[project]] with priority [[priority]] and assign to [[assignee]]" },
+    hint: { en: "Creates a task in the selected project." },
+    args: [
+      {
+        type: "text",
+        name: "content",
+        placeholder: { en: "Do the laundry" }
+      },
+      {
+        type: "autocomplete",
+        name: "project",
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      },
+      {
+        type: "dropdown",
+        name: "priority",
+        required: false,
+        title: { en: "Priority" },
+        value: "1",
+        values: [
+          { id: "4", label: { en: "P1" } },
+          { id: "3", label: { en: "P2" } },
+          { id: "2", label: { en: "P3" } },
+          { id: "1", label: { en: "P4" } }
+        ]
+      },
+      {
+        type: "autocomplete",
+        name: "assignee",
+        required: false,
+        placeholder: { en: "Search for assignees..." },
+        title: { en: "Assignee" }
+      }
+    ]
+  }}
+/>
+
+### Create a project task with a due text
+
+Creates a task with a natural-language due date string (e.g., "in 1 hour", "tomorrow at 3pm"). The due text interpretation is based on your Todoist language and timezone settings.
+
+<FlowCard
+  data={{
+    title: { en: "Create a project task with a due text..." },
+    titleFormatted: { en: "Create a task [[content]] in [[project]] and due [[due_string]] with priority [[priority]] and assign to [[assignee]]" },
+    hint: { en: "Creates a task in the selected project with a due text (e.g. in 1 hour). The due text is based on the Todoist language/timezone setting. For all posibilities refer to the Todoist help articles." },
+    args: [
+      {
+        type: "text",
+        name: "content",
+        placeholder: { en: "Do the laundry" }
+      },
+      {
+        type: "autocomplete",
+        name: "project",
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      },
+      {
+        type: "text",
+        name: "due_string",
+        placeholder: { en: "e.g. in 1 hour of 21-05-2021 20:20" },
+        title: { en: "Due" }
+      },
+      {
+        type: "dropdown",
+        name: "priority",
+        required: false,
+        title: { en: "Priority" },
+        value: "1",
+        values: [
+          { id: "4", label: { en: "P1" } },
+          { id: "3", label: { en: "P2" } },
+          { id: "2", label: { en: "P3" } },
+          { id: "1", label: { en: "P4" } }
+        ]
+      },
+      {
+        type: "autocomplete",
+        name: "assignee",
+        required: false,
+        placeholder: { en: "Search for assignees..." },
+        title: { en: "Assignee" }
+      }
+    ]
+  }}
+/>
+
+:::info
+
+The due text supports Todoist's natural language parsing. Examples include:
+- `tomorrow`
+- `next Monday`
+- `in 2 hours`
+- `every day at 9am`
+- `21-05-2025 20:20`
+
+For the full list of supported formats, refer to the [Todoist help articles](https://todoist.com/help/articles/set-a-recurring-due-date-YUYVJJAV).
+
+:::
+
+### Create a project task with a due date
+
+Creates a task with a specific due date using a date picker.
+
+<FlowCard
+  data={{
+    title: { en: "Create a project task with a due date..." },
+    titleFormatted: { en: "Create a task [[content]] in [[project]] and due date [[due_date]] with priority [[priority]] and assign to [[assignee]]" },
+    hint: { en: "Creates a task in the selected project with a due date." },
+    args: [
+      {
+        type: "text",
+        name: "content",
+        placeholder: { en: "Do the laundry" }
+      },
+      {
+        type: "autocomplete",
+        name: "project",
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      },
+      {
+        type: "date",
+        name: "due_date",
+        title: { en: "Due date" },
+        placeholder: { en: "Due date..." }
+      },
+      {
+        type: "dropdown",
+        name: "priority",
+        required: false,
+        title: { en: "Priority" },
+        value: "1",
+        values: [
+          { id: "4", label: { en: "P1" } },
+          { id: "3", label: { en: "P2" } },
+          { id: "2", label: { en: "P3" } },
+          { id: "1", label: { en: "P4" } }
+        ]
+      },
+      {
+        type: "autocomplete",
+        name: "assignee",
+        required: false,
+        placeholder: { en: "Search for assignees..." },
+        title: { en: "Assignee" }
+      }
+    ]
+  }}
+/>
+
+### Create a project task with a due date and time
+
+Creates a task with both a specific due date and time. The time is adjusted for your Homey's timezone.
+
+<FlowCard
+  data={{
+    title: { en: "Create a project task with a due date and a due time..." },
+    titleFormatted: { en: "Create a task [[content]] in [[project]] and due date [[due_date]] and due time [[due_time]] with priority [[priority]] and assign to [[assignee]]" },
+    hint: { en: "Creates a task in the selected project with a due date and a due time." },
+    args: [
+      {
+        type: "text",
+        name: "content",
+        placeholder: { en: "Do the laundry" }
+      },
+      {
+        type: "autocomplete",
+        name: "project",
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      },
+      {
+        type: "date",
+        name: "due_date",
+        title: { en: "Due date" },
+        placeholder: { en: "Due date..." }
+      },
+      {
+        type: "time",
+        name: "due_time",
+        title: { en: "Due time" },
+        placeholder: { en: "Due time..." }
+      },
+      {
+        type: "dropdown",
+        name: "priority",
+        required: false,
+        title: { en: "Priority" },
+        value: "1",
+        values: [
+          { id: "4", label: { en: "P1" } },
+          { id: "3", label: { en: "P2" } },
+          { id: "2", label: { en: "P3" } },
+          { id: "1", label: { en: "P4" } }
+        ]
+      },
+      {
+        type: "autocomplete",
+        name: "assignee",
+        required: false,
+        placeholder: { en: "Search for assignees..." },
+        title: { en: "Assignee" }
+      }
+    ]
+  }}
+/>
+
+### Fetch project tasks
+
+Fetches all tasks for a given project and triggers any "Tasks are fetched for project..." When cards that are listening for the same project.
+
+<FlowCard
+  data={{
+    title: { en: "Fetch project tasks..." },
+    titleFormatted: { en: "Fetch tasks for [[project]]" },
+    hint: { en: "Fetch the tasks for a project. This card attempts to start When cards that are listening to a fetch event for the same project." },
+    args: [
+      {
+        type: "autocomplete",
+        name: "project",
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      }
+    ]
+  }}
+/>
+
+:::tip
+
+Combine this action card with the "Tasks are fetched for project" trigger card to create flows that process task lists. For example, you could fetch tasks on a schedule and send the list as a notification.
+
+:::
+
+### Complete tasks with filter
+
+Completes all tasks matching the given filter text. You can optionally restrict the search to a specific project.
+
+<FlowCard
+  data={{
+    title: { en: "Complete tasks with filter..." },
+    titleFormatted: { en: "Complete tasks with [[filter]] in [[project]]" },
+    hint: { en: "A filter that is not very specific has the potential the complete alot of tasks. Make sure you have a very specific filter." },
+    args: [
+      {
+        type: "text",
+        name: "filter",
+        title: { en: "Filter" },
+        placeholder: { en: "Do the laundry" }
+      },
+      {
+        type: "autocomplete",
+        name: "project",
+        required: false,
+        placeholder: { en: "Search for projects..." },
+        title: { en: "Project" }
+      }
+    ]
+  }}
+/>
+
+:::warning
+
+Be careful with broad filters! A non-specific filter can match and complete many tasks at once. Always use a very specific filter to avoid accidentally completing tasks you didn't intend to.
+
+:::
+
+## How to Use Flow Cards
+
+1. In the Homey app, go to **Flows**.
+2. Either **edit an existing Flow** or **create a new Flow**:
+   * **Mobile App:** Tap the **+** icon in the top-right corner, then select **New Flow**.
+   * **Web App:** Click **New Flow** to start a new flow (basic or advanced).
+3. In the flow editor:
+   * For **triggers**: Go to **When** and search for your **Todoist User** device.
+   * For **conditions**: Go to **And** and search for your **Todoist User** device.
+   * For **actions**: Go to **Then** and search for your **Todoist User** device.
+4. Select the desired flow card and configure the parameters.
+5. Combine with other triggers, conditions, or actions to build your automation.
+
+### Example: Daily Task Reminder
+
+1. When: Every day at 8:00 AM (using a time trigger)
+2. Then: Fetch tasks for your "Shopping" project
+3. When: Tasks for "Shopping" are fetched
+4. Then: Send a push notification with the tasks token
+
+### Example: Auto-Create Task When Washing Machine Finishes
+
+1. When: The washing machine signals it has finished
+2. Then: Create a task "Hang up the laundry" in your "Household" project with due "in 1 hour"

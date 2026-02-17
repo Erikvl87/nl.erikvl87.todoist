@@ -1,0 +1,240 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* Todoist brand colors:
+   Primary red: #db4035
+   Dark red: #b8342a
+   Light red: #e57373
+   White: #ffffff
+   Dark background: #1f1f1f
+   Text on dark: #fafafa
+*/
+:root {
+  --ifm-color-primary: #db4035;
+  --ifm-color-primary-dark: #c73a30;
+  --ifm-color-primary-darker: #b8342a;
+  --ifm-color-primary-darkest: #962b22;
+  --ifm-color-primary-light: #e0574d;
+  --ifm-color-primary-lighter: #e57373;
+  --ifm-color-primary-lightest: #ef9a9a;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(219, 64, 53, 0.1);
+  --todoist-red: #db4035;
+  --todoist-red-dark: #b8342a;
+  --todoist-red-light: #e57373;
+  --ifm-link-color: #db4035;
+  --ifm-link-hover-color: #b8342a;
+  --ifm-link-decoration: underline;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+html[data-theme='dark'] {
+  --ifm-color-primary: #e57373;
+  --ifm-color-primary-dark: #e05c5c;
+  --ifm-color-primary-darker: #db4e4e;
+  --ifm-color-primary-darkest: #cf2d2d;
+  --ifm-color-primary-light: #ea8a8a;
+  --ifm-color-primary-lighter: #ef9a9a;
+  --ifm-color-primary-lightest: #f7c4c4;
+  --docusaurus-highlighted-code-line-bg: rgba(229, 115, 115, 0.15);
+  --ifm-background-color: #1a1a1a;
+  --ifm-background-surface-color: #2a2a2a;
+  --ifm-link-color: #ef9a9a;
+  --ifm-link-hover-color: #e57373;
+}
+
+/* Navbar with Todoist red */
+.navbar {
+  background-color: #db4035;
+  --ifm-navbar-link-color: #ffffff;
+  --ifm-navbar-link-hover-color: #fce4ec;
+}
+
+.navbar__title {
+  color: #ffffff;
+}
+
+.navbar__brand {
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+.navbar__brand:hover {
+  color: #fce4ec !important;
+  text-decoration: none !important;
+}
+
+.navbar__brand:hover .navbar__title {
+  color: #fce4ec;
+}
+
+.navbar__logo img {
+  filter: brightness(0) invert(1);
+}
+
+.navbar__link {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: #fce4ec;
+  text-decoration: none;
+}
+
+/* Theme toggle icon - make it visible on red navbar */
+.navbar [class*='toggle'] {
+  color: #ffffff;
+}
+
+.navbar [class*='toggle']:hover {
+  color: #fce4ec;
+}
+
+[data-theme='dark'] .navbar [class*='toggle'] {
+  color: #ffffff;
+}
+
+/* Dark mode navbar - keep consistent */
+[data-theme='dark'] .navbar {
+  background-color: #db4035;
+}
+
+/* Mobile menu fixes */
+@media (max-width: 996px) {
+  .navbar-sidebar {
+    background-color: #ffffff;
+  }
+
+  [data-theme='dark'] .navbar-sidebar {
+    background-color: #1a1a1a;
+  }
+
+  .navbar-sidebar .navbar__brand,
+  .navbar-sidebar .navbar__title,
+  .navbar-sidebar .navbar__link {
+    color: #db4035 !important;
+  }
+
+  .navbar-sidebar .navbar__brand:hover,
+  .navbar-sidebar .navbar__title:hover,
+  .navbar-sidebar .navbar__link:hover,
+  .navbar-sidebar .navbar__link--active {
+    color: #b8342a !important;
+  }
+
+  .navbar-sidebar [class*='toggle'] {
+    color: #db4035 !important;
+  }
+
+  .navbar-sidebar [class*='toggle']:hover {
+    color: #b8342a !important;
+  }
+
+  [data-theme='dark'] .navbar-sidebar .navbar__brand,
+  [data-theme='dark'] .navbar-sidebar .navbar__title,
+  [data-theme='dark'] .navbar-sidebar .navbar__link {
+    color: #ffffff !important;
+  }
+
+  [data-theme='dark'] .navbar-sidebar .navbar__brand:hover,
+  [data-theme='dark'] .navbar-sidebar .navbar__title:hover,
+  [data-theme='dark'] .navbar-sidebar .navbar__link:hover,
+  [data-theme='dark'] .navbar-sidebar .navbar__link--active {
+    color: #e57373 !important;
+  }
+
+  [data-theme='dark'] .navbar-sidebar [class*='toggle'] {
+    color: #ffffff !important;
+  }
+
+  [data-theme='dark'] .navbar-sidebar [class*='toggle']:hover {
+    color: #e57373 !important;
+  }
+}
+
+/* Sidebar links - no underline for cleaner look */
+.menu__link {
+  text-decoration: none;
+}
+
+.menu__link:hover {
+  text-decoration: none;
+}
+
+/* Table of contents links - no underline */
+.table-of-contents__link {
+  text-decoration: none;
+}
+
+.table-of-contents__link:hover {
+  text-decoration: none;
+}
+
+/* Footer */
+.footer {
+  background-color: #f5f5f5;
+  --ifm-footer-background-color: #f5f5f5;
+  --ifm-footer-color: #333333;
+  --ifm-footer-link-color: #333333;
+}
+
+.footer__title {
+  color: #333333;
+}
+
+.footer__link-item {
+  color: #333333;
+}
+
+.footer__link-item:hover {
+  color: #db4035;
+}
+
+.footer__copyright {
+  color: #666666;
+}
+
+/* Dark mode footer */
+[data-theme='dark'] .footer {
+  background-color: #2a2a2a;
+  --ifm-footer-background-color: #2a2a2a;
+  --ifm-footer-color: #fafafa;
+  --ifm-footer-link-color: #fafafa;
+}
+
+[data-theme='dark'] .footer__title,
+[data-theme='dark'] .footer__link-item {
+  color: #fafafa;
+}
+
+[data-theme='dark'] .footer__link-item:hover {
+  color: #e57373;
+}
+
+[data-theme='dark'] .footer__copyright {
+  color: #aaaaaa;
+}
+
+/* Subtle pagination buttons */
+.pagination-nav__link {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background-color: var(--ifm-background-surface-color);
+  text-decoration: none;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--ifm-color-emphasis-400);
+  background-color: var(--ifm-color-emphasis-100);
+  text-decoration: none;
+}
+
+.pagination-nav__label,
+.pagination-nav__sublabel {
+  color: var(--ifm-color-content);
+  text-decoration: none;
+}

@@ -1,0 +1,77 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fce4ec 0%, #ffffff 100%);
+  color: #333333;
+}
+
+.heroWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+}
+
+.heroContent {
+  flex: 1 1 0;
+  text-align: center;
+  max-width: 700px;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem;
+  }
+
+  .heroWrapper {
+    flex-direction: column;
+  }
+
+  .heroContent {
+    text-align: center;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttons :global(.button--secondary) {
+  color: #ffffff;
+  background-color: #db4035;
+  border-color: #db4035;
+  font-weight: 600;
+}
+
+.buttons :global(.button--secondary:hover) {
+  background-color: #b8342a;
+  border-color: #b8342a;
+  color: #ffffff;
+}
+
+.heroDescription {
+  margin: 1rem auto 1.5rem;
+  max-width: 800px;
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.heroDescription a {
+  color: #db4035;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.heroDescription a:hover {
+  color: #b8342a;
+}
