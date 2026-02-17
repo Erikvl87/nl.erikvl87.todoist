@@ -42,22 +42,22 @@
     "small": "/assets/images/small.png"
   },
   "author": {
-    "name": "Jeroen Wienk",
-    "email": "jeroenwienk@gmail.com"
+    "name": "Erik van Leeuwen",
+    "email": "homey@erikvl87.nl"
   },
   "contributors": {
     "developers": [
       {
-        "name": "Erik van Leeuwen"
+        "name": "Jeroen Wienk"
       }
     ]
   },
   "bugs": {
-    "url": "https://github.com/jeroenwienk/nl.jwienk.todoist/issues"
+    "url": "https://github.com/erikvl87/nl.erikvl87.todoist/issues"
   },
-  "source": "https://github.com/jeroenwienk/nl.jwienk.todoist",
+  "source": "https://github.com/erikvl87/nl.erikvl87.todoist",
   "homepage": "https://todoist.com/",
-  "support": "mailto:jeroenwienk@gmail.com",
+  "support": "https://todoist.erikvl87.nl/",
   "homeyCommunityTopicId": 42818,
   "api": {
     "getUsers": {
