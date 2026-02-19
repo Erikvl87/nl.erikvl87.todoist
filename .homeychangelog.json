@@ -51,5 +51,8 @@
   },
   "2.0.0": {
     "en": "Breaking change: Please re-pair your Todoist account due to authentication updates.\\n\\n• Added a project dashboard widget.\\n• Added support for project sections.\\n• Transferred app ownership to a new maintainer."
+  },
+  "2.0.1": {
+    "en": "Fixed pairing by migrating the deprecated sync API call."
   }
 }
