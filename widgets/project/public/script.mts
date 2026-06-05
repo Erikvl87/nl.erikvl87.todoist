@@ -57,6 +57,7 @@ class ProjectWidgetScript {
       errorTechnical: document.querySelector<HTMLElement>('.error-technical'),
       errorRefresh: document.querySelector<HTMLElement>('.error-refresh'),
       errorRefreshBar: document.querySelector<HTMLElement>('.error-refresh-bar'),
+      errorRetryButton: document.querySelector<HTMLButtonElement>('.error-retry-button'),
       topBar: document.querySelector<HTMLElement>('.top-bar'),
       errorHeader: document.querySelector<HTMLElement>('.error-header'),
     };
@@ -116,7 +117,9 @@ class ProjectWidgetScript {
         this.taskTree.organize(projectData);
       })
       .catch((error) => {
-        this.showError('Error fetching project data', error?.message);
+        this.showError('Error fetching project data', error?.message, undefined, async () => {
+          await this.synchronize();
+        });
       });
   }
 
@@ -303,24 +306,40 @@ class ProjectWidgetScript {
 
   /**
    * Shows an error message overlaying the main widget content.
+   * Pass `onAutoHide` to show an animated progress bar that auto-retries after a timeout.
+   * Pass `onManualRetry` to show a button the user must click to retry (used for sync failures).
+   * The two callbacks are mutually exclusive; `onManualRetry` takes priority.
    * @param message The error message to display.
    */
   private showError(
     message: string,
     technical?: string,
-    onAutoHide?: () => Promise<void> | void
+    onAutoHide?: () => Promise<void> | void,
+    onManualRetry?: () => Promise<void> | void,
   ): void {
-    const { project: projectEl, error: errorEl, errorMessage: errorMessageEl, errorTechnical: errorTechnicalEl } = this.domElements;
+    const { project: projectEl, error: errorEl, errorMessage: errorMessageEl, errorTechnical: errorTechnicalEl, errorRefresh: errorRefreshEl, errorRetryButton: errorRetryButtonEl } = this.domElements;
     errorMessageEl.textContent = message;
     errorTechnicalEl.textContent = technical ?? '';
     errorTechnicalEl.toggleAttribute('hidden', !technical);
-    
+
     projectEl.hidden = true;
     errorEl.hidden = false;
 
-    if (onAutoHide) {
+    if (onManualRetry) {
+      this.clearErrorAutoHide();
+      errorRefreshEl.hidden = true;
+      errorRetryButtonEl.hidden = false;
+      errorRetryButtonEl.onclick = async () => {
+        this.hideError();
+        await onManualRetry();
+      };
+    } else if (onAutoHide) {
+      errorRefreshEl.hidden = false;
+      errorRetryButtonEl.hidden = true;
       this.scheduleErrorAutoHide(onAutoHide);
     } else {
+      errorRefreshEl.hidden = false;
+      errorRetryButtonEl.hidden = true;
       this.clearErrorAutoHide();
     }
 
@@ -331,11 +350,13 @@ class ProjectWidgetScript {
    * Hides the error message and reveals the main widget content.
    */
   private hideError(): void {
-    const { project: projectEl, error: errorEl, errorTechnical: errorTechnicalEl } = this.domElements;
+    const { project: projectEl, error: errorEl, errorTechnical: errorTechnicalEl, errorRetryButton: errorRetryButtonEl } = this.domElements;
     projectEl.hidden = false;
     errorEl.hidden = true;
     errorTechnicalEl.textContent = '';
     errorTechnicalEl.hidden = true;
+    errorRetryButtonEl.hidden = true;
+    errorRetryButtonEl.onclick = null;
     this.clearErrorAutoHide();
     this.scheduleHeightUpdate();
   }

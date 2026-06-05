@@ -340,4 +340,24 @@ main {
     border-radius: 999px;
     transition: width 3s linear;
   }
+
+  & .error-retry-button {
+    margin-top: var(--homey-su-4);
+    padding: var(--homey-su-2) var(--homey-su-6);
+    border: 1.5px solid #e44332;
+    border-radius: 999px;
+    background: transparent;
+    color: #e44332;
+    font-size: var(--homey-font-size-small);
+    font-family: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(228, 67, 50, 0.1);
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
 }
