@@ -54,5 +54,8 @@
   },
   "2.0.1": {
     "en": "Fixed pairing by migrating the deprecated sync API call."
+  },
+  "2.0.2": {
+    "en": "Added a retry button to the project widget when data fails to load."
   }
 }
