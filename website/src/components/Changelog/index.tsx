@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import changelogData from '@root/.homeychangelog.json';
 import Heading from '@theme/Heading';
 
@@ -90,7 +90,7 @@ export const changelogToc = majorVersions.flatMap(major => {
   ];
 });
 
-export default function Changelog(): JSX.Element {
+export default function Changelog(): ReactNode {
   return (
     <div>
       {majorVersions.map((major) => (
