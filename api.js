@@ -1,10 +1,4 @@
-function getUserDevice({ homey, userId }) {
-  const driver = homey.drivers.getDriver('user');
-  const devices = driver.getDevices();
-  return devices.find((device) => {
-    return device.getData().id.toString() === userId.toString();
-  });
-}
+const { getUserDevice } = require('./lib/getUserDevice');
 
 module.exports = {
   async getUsers({ homey, params, query, body }) {
@@ -22,7 +16,7 @@ module.exports = {
     return result;
   },
   async getUser({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return {
@@ -34,7 +28,7 @@ module.exports = {
     return null;
   },
   async getUserProjects({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.getProjects();
@@ -43,7 +37,7 @@ module.exports = {
     return [];
   },
   async getUserProject({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.getProject({
@@ -54,7 +48,7 @@ module.exports = {
     return null;
   },
   async getUserProjectTasks({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.getTasks({
@@ -65,7 +59,7 @@ module.exports = {
     return [];
   },
   async getUserProjectTask({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.getTask({
@@ -76,7 +70,7 @@ module.exports = {
     return null;
   },
   async getUserTasks({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.getTasks();
@@ -85,7 +79,7 @@ module.exports = {
     return null;
   },
   async getUserTask({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.getTask({
@@ -96,7 +90,7 @@ module.exports = {
     return null;
   },
   async createUserTask({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.createTask(body);
@@ -105,7 +99,7 @@ module.exports = {
     return null;
   },
   async updateUserTask({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.updateTask(params.taskId, body);
@@ -114,7 +108,7 @@ module.exports = {
     return null;
   },
   async closeUserTask({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.closeTask(params.taskId);
@@ -123,7 +117,7 @@ module.exports = {
     return null;
   },
   async reopenUserTask({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.reopenTask(params.taskId);
@@ -132,7 +126,7 @@ module.exports = {
     return null;
   },
   async deleteUserTask({ homey, params, query, body }) {
-    const device = getUserDevice({ homey, userId: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
 
     if (device != null) {
       return await device.oAuth2Client.deleteTask(params.taskId);

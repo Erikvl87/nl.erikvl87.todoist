@@ -1,9 +1,10 @@
 'use strict';
 
+const { getUserDevice } = require('../../lib/getUserDevice');
+
 module.exports = {
   async getProject({ homey, params, query }) {
-    const driver = homey.drivers.getDriver('user');
-    const device = driver.getDevice({ id: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
     if (device == null)
       throw new Error('User device not found');
 
@@ -18,8 +19,7 @@ module.exports = {
     }
   },
   async completeTask({ homey, params, body }) {
-    const driver = homey.drivers.getDriver('user');
-    const device = driver.getDevice({ id: params.userId });
+    const device = await getUserDevice({ homey, userId: params.userId });
     if (device == null)
       throw new Error('User device not found');
 
