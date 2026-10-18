@@ -57,5 +57,8 @@
   },
   "2.0.2": {
     "en": "Added a retry button to the project widget when data fails to load."
+  },
+  "2.0.3": {
+    "en": "Fixed the project widget showing an error after an app restart, and fixed crashes on Todoist events for removed or mismatched accounts. Updated dependencies to resolve security alerts."
   }
 }
