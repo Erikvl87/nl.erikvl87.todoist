@@ -78,21 +78,47 @@ class App extends OAuth2App {
   }
 
   async registerWebhookData({ data }) {
+    this.ids.add(String(data.id));
+    await this.refreshWebhook();
+  }
+
+  async unregisterWebhookData({ data }) {
+    this.ids.delete(String(data.id));
+    await this.refreshWebhook();
+  }
+
+  /**
+   * Re-creates the cloud webhook with the current set of user ids as keys.
+   * Calls are serialized so devices initializing in parallel don't race.
+   */
+  refreshWebhook() {
+    this.webhookQueue = (this.webhookQueue ?? Promise.resolve())
+      .catch(() => {})
+      .then(() => this._refreshWebhook());
+    return this.webhookQueue;
+  }
+
+  async _refreshWebhook() {
     if (this.webhook) {
-      await this.webhook.unregister();
+      await this.webhook.unregister().catch((err) => this.error('Failed to unregister webhook:', err));
+      this.webhook = null;
     }
 
-    this.ids.add(data.id);
+    const ids = [...this.ids];
+    if (ids.length === 0) return;
 
     const id = Homey.env.WEBHOOK_ID;
     const secret = Homey.env.WEBHOOK_SECRET;
-    const ids = [...this.ids];
 
-    const myWebhook = await this.homey.cloud.createWebhook(id, secret, { $keys: ids });
+    this.webhook = await this.homey.cloud.createWebhook(id, secret, { $keys: ids });
 
-    myWebhook.on('message', async (args) => {
-      const driver = this.homey.drivers.getDriver('user');
-      await driver.onWebhookEvent({ body: args.body });
+    this.webhook.on('message', async (args) => {
+      try {
+        const driver = this.homey.drivers.getDriver('user');
+        await driver.onWebhookEvent({ body: args.body });
+      } catch (err) {
+        this.error('Failed to handle webhook event:', err);
+      }
     });
   }
 }

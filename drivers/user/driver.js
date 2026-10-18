@@ -86,7 +86,12 @@ class UserDriver extends OAuth2Driver {
   async onWebhookEvent({ body }) {
     console.log('Webhook event received:', body);
     const userId = body.user_id;
-    const device = this.getDevice({ id: userId });
+    // Compare as strings: devices paired on older API versions may store a numeric id.
+    const device = this.getDevices().find((d) => String(d.getData().id) === String(userId));
+    if (!device) {
+      this.log(`Ignoring webhook event for unknown user ${userId}`);
+      return;
+    }
 
     const [category] = body.event_name.split(':');
     const projectId = ({
