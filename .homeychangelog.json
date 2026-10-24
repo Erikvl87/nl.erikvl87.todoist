@@ -63,5 +63,8 @@
   },
   "2.1.0": {
     "en": "Replaced the red top bar in the project widget with a subtle project heading, which you can now hide in the widget settings."
+  },
+  "2.1.1": {
+    "en": "improve App Store description, tags and readme."
   }
 }
