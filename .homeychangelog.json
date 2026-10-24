@@ -60,5 +60,8 @@
   },
   "2.0.3": {
     "en": "Fixed the project widget showing an error after an app restart, and fixed crashes on Todoist events for removed or mismatched accounts. Updated dependencies to resolve security alerts."
+  },
+  "2.1.0": {
+    "en": "Replaced the red top bar in the project widget with a subtle project heading, which you can now hide in the widget settings."
   }
 }
