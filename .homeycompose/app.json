@@ -9,8 +9,8 @@
     "nl": "Todoist"
   },
   "description": {
-    "en": "The to do list to organize work & life.",
-    "nl": "The to do list to organize work & life."
+    "en": "Let your home keep your to-do list in check",
+    "nl": "Laat je huis je takenlijst bijhouden"
   },
   "category": [
     "internet",
@@ -21,18 +21,35 @@
   ],
   "tags": {
     "en": [
+      "todoist",
       "todo",
-      "todo list",
+      "to-do",
+      "to do",
       "tasks",
-      "task list",
-      "organize"
+      "reminders",
+      "shopping list",
+      "groceries",
+      "checklist",
+      "productivity",
+      "organize",
+      "widget",
+      "dashboard"
     ],
     "nl": [
+      "todoist",
       "todo",
-      "todo lijst",
+      "to-do",
+      "to-dolijst",
       "taken",
-      "taken lijst",
-      "organiseren"
+      "takenlijst",
+      "herinneringen",
+      "boodschappenlijst",
+      "boodschappen",
+      "checklist",
+      "productiviteit",
+      "organiseren",
+      "widget",
+      "dashboard"
     ]
   },
   "permissions": [],
