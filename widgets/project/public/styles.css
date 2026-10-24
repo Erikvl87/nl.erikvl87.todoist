@@ -1,7 +1,3 @@
-:root {
-  --top-bar-height: 44px;
-}
-
 html,
 body {
   height: 100%;
@@ -12,22 +8,6 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-}
-
-.top-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  border-bottom: 1px solid #ca2100;
-  background-color: #e44332;
-  height: var(--top-bar-height);
-  overflow: hidden;
-
-  & .logo {
-    height: var(--top-bar-height);
-  }
 }
 
 main {
@@ -47,7 +27,6 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-top: var(--top-bar-height);
   box-sizing: border-box;
   min-height: 0;
   overflow: visible;
@@ -72,10 +51,37 @@ main {
     border-radius: 999px;
   }
 
-  & .project-title {
+  & .header {
+    display: flex;
+    align-items: center;
+    gap: var(--homey-su-2);
     font-size: var(--homey-font-size-large);
     padding: 0 0 var(--homey-su-2);
     flex-shrink: 0;
+    min-width: 0;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  & .logo {
+    --logo-size: 1em;
+    width: var(--logo-size);
+    height: var(--logo-size);
+    flex-shrink: 0;
+    background-color: var(--homey-color-mono-400);
+    mask: url('icon.svg') center / contain no-repeat;
+    -webkit-mask: url('icon.svg') center / contain no-repeat;
+  }
+
+  & .project-title {
+    font-size: inherit;
+    margin: 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   & .project {

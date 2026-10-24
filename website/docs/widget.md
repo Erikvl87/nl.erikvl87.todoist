@@ -11,7 +11,7 @@ The **Project** widget displays your Todoist project tasks directly on your Home
 
 The widget shows:
 
-* Project name in the header
+* A heading with the project name and a small Todoist icon (optional, see **Show project heading**)
 * Tasks organized by sections (if any)
 * Subtasks nested under their parent tasks with indentation
 
@@ -22,6 +22,7 @@ Tasks update in real time. When you complete, add, or modify a task in Todoist, 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
 | Project | Autocomplete | None | The Todoist project to display. Select from all projects across all connected Todoist user devices. |
+| Show project heading | Checkbox | Enabled | When enabled, a heading with the project name and Todoist icon is shown above the tasks. Disable it to hide the whole heading and show only the tasks, for example when you use Homey's own widget title instead. |
 | Allow completing tasks from widget | Checkbox | Enabled | When enabled, each task shows a clickable checkbox that completes the task directly from the dashboard. |
 | Auto adjust height | Checkbox | Disabled | When enabled, the widget height automatically adjusts to fit the content. When disabled, the widget uses a fixed height with scrolling. |
 
@@ -34,6 +35,7 @@ Tasks update in real time. When you complete, add, or modify a task in Todoist, 
 5. Choose the **Project** widget.
 6. In the widget settings:
    * Select the **Project** you want to display.
+   * Toggle **Show project heading** off if you only want to see the tasks.
    * Toggle **Allow completing tasks from widget** on or off depending on your preference.
    * Toggle **Auto adjust height** if you want the widget to resize based on the number of tasks.
 7. Save and exit edit mode.
@@ -63,7 +65,7 @@ The widget receives real-time updates for the following Todoist events:
 | Section added | New section appears with its tasks |
 | Section updated | Section title is updated |
 | Section deleted | Section and its tasks are removed |
-| Project updated | Project title in the header is updated |
+| Project updated | Project name in the heading is updated |
 
 :::info
 

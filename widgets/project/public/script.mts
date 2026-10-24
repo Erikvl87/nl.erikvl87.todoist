@@ -18,6 +18,7 @@ type ProjectWidgetSettings = {
   },
   allowCompletingTasks: boolean;
   autoAdjustHeight: boolean;
+  showProjectHeading?: boolean;
 };
 
 /**
@@ -50,6 +51,7 @@ class ProjectWidgetScript {
 
     this.domElements = {
       main: document.querySelector<HTMLElement>('main'),
+      header: document.querySelector<HTMLElement>('.header'),
       projectTitle: document.querySelector<HTMLElement>('.project-title'),
       project: document.querySelector<HTMLElement>('.project'),
       error: document.querySelector<HTMLElement>('#error'),
@@ -58,12 +60,13 @@ class ProjectWidgetScript {
       errorRefresh: document.querySelector<HTMLElement>('.error-refresh'),
       errorRefreshBar: document.querySelector<HTMLElement>('.error-refresh-bar'),
       errorRetryButton: document.querySelector<HTMLButtonElement>('.error-retry-button'),
-      topBar: document.querySelector<HTMLElement>('.top-bar'),
       errorHeader: document.querySelector<HTMLElement>('.error-header'),
     };
 
     this.domElements.main.classList.toggle('auto-height', this.settings.autoAdjustHeight);
     this.domElements.project.classList.toggle('auto-height', this.settings.autoAdjustHeight);
+    // Widgets added before this setting existed have no value yet, so default to showing the heading.
+    this.domElements.header.hidden = this.settings.showProjectHeading === false;
 
     this.taskTree = new TaskTree(this.domElements.project,
       this.settings.allowCompletingTasks, {
