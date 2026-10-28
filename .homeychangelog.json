@@ -66,5 +66,8 @@
   },
   "2.1.1": {
     "en": "improve App Store description, tags and readme."
+  },
+  "2.2.0": {
+    "en": "Added a feature to add new tasks to a project via either the existing Project widget or the new Add Task widget."
   }
 }
