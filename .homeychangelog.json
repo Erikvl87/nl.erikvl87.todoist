@@ -69,5 +69,8 @@
   },
   "2.2.0": {
     "en": "Added a feature to add new tasks to a project via either the existing Project widget or the new Add Task widget."
+  },
+  "2.2.1": {
+    "en": "Fixed minor visual issues in the new Add Task features."
   }
 }
