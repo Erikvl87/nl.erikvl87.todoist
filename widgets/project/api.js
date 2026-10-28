@@ -1,6 +1,7 @@
 'use strict';
 
 const { getUserDevice } = require('../../lib/getUserDevice');
+const { createWidgetTask } = require('../../lib/createWidgetTask');
 
 module.exports = {
   async getProject({ homey, params, query }) {
@@ -27,6 +28,18 @@ module.exports = {
       return await device.oAuth2Client.closeTask(params.taskId);
     } catch (error) {
       homey.log('Error completing task:', error);
+      throw error;
+    }
+  },
+  async createTask({ homey, params, body }) {
+    const device = await getUserDevice({ homey, userId: params.userId });
+    if (device == null)
+      throw new Error('User device not found');
+
+    try {
+      return await createWidgetTask({ homey, client: device.oAuth2Client, body });
+    } catch (error) {
+      homey.log('Error creating task:', error);
       throw error;
     }
   }

@@ -24,6 +24,8 @@ Tasks update in real time. When you complete, add, or modify a task in Todoist, 
 | Project | Autocomplete | None | The Todoist project to display. Select from all projects across all connected Todoist user devices. |
 | Show project heading | Checkbox | Enabled | When enabled, a heading with the project name and Todoist icon is shown above the tasks. Disable it to hide the whole heading and show only the tasks, for example when you use Homey's own widget title instead. |
 | Allow completing tasks from widget | Checkbox | Enabled | When enabled, each task shows a clickable checkbox that completes the task directly from the dashboard. |
+| Allow adding tasks from widget | Checkbox | Enabled | When enabled, every section ends with an **+ Add task** row that opens a form for a new task. See [Adding Tasks](#adding-tasks). |
+| Use Todoist Quick Add syntax | Checkbox | Disabled | When enabled, the task text is parsed like the Todoist Quick Add bar, so `#project`, `/section`, `@label`, `p1` and dates in the text are recognised. The date and priority fields are hidden. |
 | Auto adjust height | Checkbox | Disabled | When enabled, the widget height automatically adjusts to fit the content. When disabled, the widget uses a fixed height with scrolling. |
 
 ## Adding the Widget
@@ -50,6 +52,25 @@ When **Allow completing tasks from widget** is enabled:
 * Once completed, the task fades out with a strikethrough animation and is removed from the list.
 
 When disabled, the checkboxes are hidden and the widget is read-only.
+
+## Adding Tasks
+
+When **Allow adding tasks from widget** is enabled:
+
+* Every section, and the list of tasks without a section, ends with an **+ Add task** row.
+* Tapping it opens a pop-up over the task list, with that section already selected. Your phone or tablet shows its own keyboard.
+* Type the task name and, optionally, a date in your own words (for example *tomorrow 9am*) and a priority (P1 to P4).
+* Use the section picker to place the task in another section, or choose **No section**.
+* Press **Add task** or the Enter key on the keyboard. The task appears in the list behind the pop-up right away, and the pop-up stays open for the next task.
+* Press **Cancel** or tap outside the pop-up to close it. Once you've added a task, the button reads **Close**: closing never undoes tasks that were added.
+
+If adding the task fails, the error is shown in the pop-up and the text you typed is kept, so you can try again.
+
+:::tip
+
+Want a small widget that only adds tasks, to any project? Use the [Add Task widget](add-task-widget.md).
+
+:::
 
 ## Real-Time Updates
 

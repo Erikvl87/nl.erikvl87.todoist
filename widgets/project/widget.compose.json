@@ -8,7 +8,8 @@
 			"id": "project",
 			"type": "autocomplete",
 			"title": {
-				"en": "Project"
+				"en": "Project",
+				"nl": "Project"
 			}
 		},
     {
@@ -30,6 +31,24 @@
       "value": true
     },
     {
+      "id": "allowAddingTasks",
+      "type": "checkbox",
+      "title": {
+        "en": "Allow adding tasks from widget",
+        "nl": "Taken toevoegen vanuit widget toestaan"
+      },
+      "value": true
+    },
+    {
+      "id": "useQuickAdd",
+      "type": "checkbox",
+      "title": {
+        "en": "Use Todoist Quick Add syntax (#project /section @label p1 dates)",
+        "nl": "Todoist Snel toevoegen-syntax gebruiken (#project /sectie @label p1 datums)"
+      },
+      "value": false
+    },
+    {
       "id": "autoAdjustHeight",
       "type": "checkbox",
       "title": {
@@ -47,6 +66,10 @@
     "completeTask": {
       "method": "POST",
       "path": "/users/:userId/tasks/:taskId/complete"
+    },
+    "createTask": {
+      "method": "POST",
+      "path": "/users/:userId/tasks"
     }
   }
 }

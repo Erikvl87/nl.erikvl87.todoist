@@ -3,6 +3,8 @@
 const Homey = require('homey');
 const { OAuth2App } = require('homey-oauth2app');
 const { TodoistClient } = require('./lib/TodoistClient');
+const { getUserDevice } = require('./lib/getUserDevice');
+const { listProjects, filterByQuery } = require('./lib/listProjects');
 
 // if (process.env.DEBUG === '1') {
 //   require('inspector').open(9229, '0.0.0.0', false);
@@ -38,43 +40,53 @@ class App extends OAuth2App {
     this.ids = new Set();
     this.webhook = null;
 
-    const widget = this.homey.dashboards.getWidget('project');
-    widget.registerSettingAutocompleteListener('project', async (query) => {
-      try {
-        const driver = this.homey.drivers.getDriver('user');
-        const devices = driver.getDevices();
+    const projectWidget = this.homey.dashboards.getWidget('project');
+    projectWidget.registerSettingAutocompleteListener('project', (query) => this.onProjectAutocomplete(query));
 
-        if (devices.length === 0) return [];
+    const addTaskWidget = this.homey.dashboards.getWidget('add-task');
+    addTaskWidget.registerSettingAutocompleteListener('project', (query) => this.onProjectAutocomplete(query));
+    addTaskWidget.registerSettingAutocompleteListener('section', (query, settings) =>
+      this.onSectionAutocomplete(query, settings)
+    );
+  }
 
-        const results = await Promise.all(
-          devices.map(async (device) => {
-            const projects = await device.oAuth2Client.getProjects();
-            return projects.map((project) => ({
-              id: project.id,
-              userId: device.getData().id,
-              name: project.name,
-              description: device.getName(),
-            }));
-          })
-        ).then((lists) => lists.reduce((all, list) => all.concat(list), []));
+  async onProjectAutocomplete(query) {
+    try {
+      const projects = await listProjects({ homey: this.homey });
+      return filterByQuery(projects, query);
+    } catch (error) {
+      this.log('Error fetching projects for autocomplete:', error);
+      throw new Error('Failed to fetch projects');
+    }
+  }
 
-        const filteredResults = query
-          ? results.filter((result) => {
-              const queryParts = query.toLowerCase().split(' ');
-              return queryParts.every(
-                (part) =>
-                  result.name.toLowerCase().includes(part) ||
-                  result.description.toLowerCase().includes(part)
-              );
-            })
-          : results;
+  /**
+   * Lists the sections of the project chosen in the same widget's settings.
+   * The chosen section remembers its project, so the widget can ignore it after the project changes.
+   */
+  async onSectionAutocomplete(query, settings) {
+    const project = settings?.project;
+    if (!project?.id) {
+      return [{ id: null, projectId: null, name: this.homey.__('chooseProjectFirst') }];
+    }
 
-        return filteredResults;
-      } catch (error) {
-        this.log('Error fetching projects for autocomplete:', error);
-        throw new Error('Failed to fetch projects');
-      }
-    });
+    try {
+      const device = await getUserDevice({ homey: this.homey, userId: project.userId });
+      if (device == null) throw new Error('User device not found');
+
+      const sections = await device.oAuth2Client.getSections({ project_id: project.id });
+      const results = [
+        { id: null, projectId: project.id, name: this.homey.__('noSection') },
+        ...sections
+          .sort((a, b) => a.section_order - b.section_order)
+          .map((section) => ({ id: section.id, projectId: project.id, name: section.name })),
+      ];
+
+      return filterByQuery(results, query);
+    } catch (error) {
+      this.log('Error fetching sections for autocomplete:', error);
+      throw new Error('Failed to fetch sections');
+    }
   }
 
   async registerWebhookData({ data }) {

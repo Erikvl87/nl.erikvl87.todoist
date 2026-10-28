@@ -1,7 +1,7 @@
 {
-  "_comment": "Watches widget TypeScript files, runs tsc to refresh .homeybuild .mjs output, allowing the Homey app runner to pick up changes without a restart.",
-  "watch": ["widgets/project/public"],
-  "ext": "mts",
-  "ignore": [],
-  "exec": "npx tsc --outDir .homeybuild"
+  "_comment": "Watches widget sources, syncs widgets-shared into each widget and runs tsc to refresh .homeybuild .mjs output, allowing the Homey app runner to pick up changes without a restart.",
+  "watch": ["widgets-shared", "widgets/*/public"],
+  "ext": "mts,css",
+  "ignore": ["widgets/*/public/shared/**"],
+  "exec": "node scripts/sync-widget-shared.mjs && npx tsc --outDir .homeybuild"
 }
