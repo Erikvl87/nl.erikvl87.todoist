@@ -266,6 +266,103 @@ main {
   }
 }
 
+/* Todoist style "Add task" row: muted text with a red plus that turns into a filled circle when pressed. */
+.project .add-task {
+  display: flex;
+  align-items: center;
+  gap: var(--homey-su-2);
+  width: 100%;
+  margin: 0;
+  padding: calc(var(--homey-su-1) + var(--homey-su) / 2) 0 var(--homey-su-2);
+  border: none;
+  background: transparent;
+  color: var(--homey-color-mono-400);
+  font-family: inherit;
+  font-size: var(--homey-font-size-small);
+  line-height: var(--homey-line-height-small);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s ease;
+
+  &::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 4v10M4 9h10' stroke='%23e44332' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / 100% no-repeat;
+    transition: background-color 0.2s ease;
+  }
+
+  &:active {
+    color: #e44332;
+
+    &::before {
+      background-color: #e44332;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 5v8M5 9h8' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: #e44332;
+
+      &::before {
+        background-color: #e44332;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 5v8M5 9h8' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+      }
+    }
+  }
+}
+
+/* The composer pop-up: a card at the top of the widget over the dimmed task list. */
+.content .composer-slot {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--homey-su-3);
+  background-color: rgba(0, 0, 0, 0.45);
+  animation: modal-backdrop-enter 0.2s ease-out;
+
+  &[hidden] {
+    display: none;
+  }
+
+  & .composer {
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--homey-su-4);
+    border: var(--homey-line-light);
+    border-radius: var(--homey-border-radius-default, 16px);
+    background-color: var(--homey-background-color, #fff);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    animation: modal-enter 0.25s ease-out;
+    transition: margin-top 0.3s ease;
+  }
+
+  /* No slide when the pop-up opens; it appears in place at the tapped row. */
+  &.placing .composer {
+    transition: none;
+  }
+}
+
+@keyframes modal-backdrop-enter {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

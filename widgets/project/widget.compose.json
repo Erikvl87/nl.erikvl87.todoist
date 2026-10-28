@@ -1,6 +1,7 @@
 {
   "name": {
-    "en": "Project"
+    "en": "Project",
+    "nl": "Project"
   },
   "height": 400,
   "settings": [
@@ -8,7 +9,8 @@
 			"id": "project",
 			"type": "autocomplete",
 			"title": {
-				"en": "Project"
+				"en": "Project",
+				"nl": "Project"
 			}
 		},
     {
@@ -30,6 +32,24 @@
       "value": true
     },
     {
+      "id": "allowAddingTasks",
+      "type": "checkbox",
+      "title": {
+        "en": "Allow adding tasks from widget",
+        "nl": "Taken toevoegen vanuit widget toestaan"
+      },
+      "value": true
+    },
+    {
+      "id": "useQuickAdd",
+      "type": "checkbox",
+      "title": {
+        "en": "Use Todoist Quick Add",
+        "nl": "Todoist Snel toevoegen gebruiken"
+      },
+      "value": false
+    },
+    {
       "id": "autoAdjustHeight",
       "type": "checkbox",
       "title": {
@@ -47,6 +67,10 @@
     "completeTask": {
       "method": "POST",
       "path": "/users/:userId/tasks/:taskId/complete"
+    },
+    "createTask": {
+      "method": "POST",
+      "path": "/users/:userId/tasks"
     }
   }
 }

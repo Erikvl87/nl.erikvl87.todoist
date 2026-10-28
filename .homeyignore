@@ -20,3 +20,6 @@ tsconfig.json
 
 # All source maps
 **/*.map
+# Build helpers and the shared widget sources (copied into each widget at build time)
+scripts/**
+widgets-shared/**

@@ -1,0 +1,84 @@
+{
+  "name": {
+    "en": "Add task",
+    "nl": "Taak toevoegen"
+  },
+  "height": 220,
+  "settings": [
+    {
+      "id": "project",
+      "type": "autocomplete",
+      "title": {
+        "en": "Default project",
+        "nl": "Standaardproject"
+      }
+    },
+    {
+      "id": "section",
+      "type": "autocomplete",
+      "title": {
+        "en": "Default section",
+        "nl": "Standaardsectie"
+      }
+    },
+    {
+      "id": "allowChangingProject",
+      "type": "checkbox",
+      "title": {
+        "en": "Allow choosing another project in the widget",
+        "nl": "Ander project kiezen in de widget toestaan"
+      },
+      "value": true
+    },
+    {
+      "id": "showHeading",
+      "type": "checkbox",
+      "title": {
+        "en": "Show heading",
+        "nl": "Kop tonen"
+      },
+      "value": true
+    },
+    {
+      "id": "showDueDate",
+      "type": "checkbox",
+      "title": {
+        "en": "Show date field",
+        "nl": "Datumveld tonen"
+      },
+      "value": true
+    },
+    {
+      "id": "showPriority",
+      "type": "checkbox",
+      "title": {
+        "en": "Show priority",
+        "nl": "Prioriteit tonen"
+      },
+      "value": true
+    },
+    {
+      "id": "useQuickAdd",
+      "type": "checkbox",
+      "title": {
+        "en": "Use Todoist Quick Add",
+        "nl": "Todoist Snel toevoegen gebruiken"
+      },
+      "value": false
+    }
+  ],
+  "api": {
+    "getProjects": {
+      "method": "GET",
+      "path": "/projects"
+    },
+    "getSections": {
+      "method": "GET",
+      "path": "/users/:userId/projects/:projectId/sections"
+    },
+    "createTask": {
+      "method": "POST",
+      "path": "/users/:userId/tasks"
+    }
+  }
+}

@@ -26,7 +26,9 @@
       "todo",
       "to-do",
       "to do",
+      "to-do list",
       "tasks",
+      "quick add",
       "reminders",
       "shopping list",
       "groceries",
@@ -43,6 +45,7 @@
       "to-dolijst",
       "taken",
       "takenlijst",
+      "snel toevoegen",
       "herinneringen",
       "boodschappenlijst",
       "boodschappen",
@@ -830,9 +833,95 @@
     }
   ],
   "widgets": {
+    "add-task": {
+      "name": {
+        "en": "Add task",
+        "nl": "Taak toevoegen"
+      },
+      "height": 220,
+      "settings": [
+        {
+          "id": "project",
+          "type": "autocomplete",
+          "title": {
+            "en": "Default project",
+            "nl": "Standaardproject"
+          }
+        },
+        {
+          "id": "section",
+          "type": "autocomplete",
+          "title": {
+            "en": "Default section",
+            "nl": "Standaardsectie"
+          }
+        },
+        {
+          "id": "allowChangingProject",
+          "type": "checkbox",
+          "title": {
+            "en": "Allow choosing another project in the widget",
+            "nl": "Ander project kiezen in de widget toestaan"
+          },
+          "value": true
+        },
+        {
+          "id": "showHeading",
+          "type": "checkbox",
+          "title": {
+            "en": "Show heading",
+            "nl": "Kop tonen"
+          },
+          "value": true
+        },
+        {
+          "id": "showDueDate",
+          "type": "checkbox",
+          "title": {
+            "en": "Show date field",
+            "nl": "Datumveld tonen"
+          },
+          "value": true
+        },
+        {
+          "id": "showPriority",
+          "type": "checkbox",
+          "title": {
+            "en": "Show priority",
+            "nl": "Prioriteit tonen"
+          },
+          "value": true
+        },
+        {
+          "id": "useQuickAdd",
+          "type": "checkbox",
+          "title": {
+            "en": "Use Todoist Quick Add",
+            "nl": "Todoist Snel toevoegen gebruiken"
+          },
+          "value": false
+        }
+      ],
+      "api": {
+        "getProjects": {
+          "method": "GET",
+          "path": "/projects"
+        },
+        "getSections": {
+          "method": "GET",
+          "path": "/users/:userId/projects/:projectId/sections"
+        },
+        "createTask": {
+          "method": "POST",
+          "path": "/users/:userId/tasks"
+        }
+      },
+      "id": "add-task"
+    },
     "project": {
       "name": {
-        "en": "Project"
+        "en": "Project",
+        "nl": "Project"
       },
       "height": 400,
       "settings": [
@@ -840,7 +929,8 @@
           "id": "project",
           "type": "autocomplete",
           "title": {
-            "en": "Project"
+            "en": "Project",
+            "nl": "Project"
           }
         },
         {
@@ -862,6 +952,24 @@
           "value": true
         },
         {
+          "id": "allowAddingTasks",
+          "type": "checkbox",
+          "title": {
+            "en": "Allow adding tasks from widget",
+            "nl": "Taken toevoegen vanuit widget toestaan"
+          },
+          "value": true
+        },
+        {
+          "id": "useQuickAdd",
+          "type": "checkbox",
+          "title": {
+            "en": "Use Todoist Quick Add",
+            "nl": "Todoist Snel toevoegen gebruiken"
+          },
+          "value": false
+        },
+        {
           "id": "autoAdjustHeight",
           "type": "checkbox",
           "title": {
@@ -879,6 +987,10 @@
         "completeTask": {
           "method": "POST",
           "path": "/users/:userId/tasks/:taskId/complete"
+        },
+        "createTask": {
+          "method": "POST",
+          "path": "/users/:userId/tasks"
         }
       },
       "id": "project"

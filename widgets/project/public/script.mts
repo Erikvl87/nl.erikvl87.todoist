@@ -7,6 +7,7 @@ import {
   type TodoistSectionInput,
 } from './TaskTree.mjs';
 import { EventQueue } from './EventQueue.mjs';
+import { TaskComposer, translate, type CreatedTask } from './shared/TaskComposer.mjs';
 
 /**
  * Typed Homey widget settings for the Todoist project widget.
@@ -19,6 +20,8 @@ type ProjectWidgetSettings = {
   allowCompletingTasks: boolean;
   autoAdjustHeight: boolean;
   showProjectHeading?: boolean;
+  allowAddingTasks?: boolean;
+  useQuickAdd?: boolean;
 };
 
 /**
@@ -28,6 +31,11 @@ class ProjectWidgetScript {
   private homey: HomeyWidget;
   private settings: ProjectWidgetSettings;
   private taskTree: TaskTree;
+  private composer: TaskComposer | null = null;
+  private composerOpen = false;
+  /** Section of the "Add task" row the pop-up was opened from; the pop-up stays next to that row. */
+  private composerAnchorSectionId: string | null = null;
+  private composerPositionFrame: number | null = null;
   private eventQueue: any[] = [];
   private processingQueue = false;
   private todoistEventQueue: EventQueue;
@@ -54,6 +62,7 @@ class ProjectWidgetScript {
       header: document.querySelector<HTMLElement>('.header'),
       projectTitle: document.querySelector<HTMLElement>('.project-title'),
       project: document.querySelector<HTMLElement>('.project'),
+      composerSlot: document.querySelector<HTMLElement>('.composer-slot'),
       error: document.querySelector<HTMLElement>('#error'),
       errorMessage: document.querySelector<HTMLElement>('.error-message'),
       errorTechnical: document.querySelector<HTMLElement>('.error-technical'),
@@ -67,6 +76,8 @@ class ProjectWidgetScript {
     this.domElements.project.classList.toggle('auto-height', this.settings.autoAdjustHeight);
     // Widgets added before this setting existed have no value yet, so default to showing the heading.
     this.domElements.header.hidden = this.settings.showProjectHeading === false;
+    // Same for adding tasks: widgets saved before this setting existed get it enabled.
+    const allowAddingTasks = this.settings.allowAddingTasks !== false;
 
     this.taskTree = new TaskTree(this.domElements.project,
       this.settings.allowCompletingTasks, {
@@ -75,12 +86,47 @@ class ProjectWidgetScript {
       onSectionAdd: (element) => this.handleAdd(element),
       onSectionRemove: (element, done) => this.handleRemove(element, done),
       onTaskCheckboxClick: (taskId, element) => this.handleTaskCheckboxClick(taskId, element),
-      onTreeChange: () => this.scheduleHeightUpdate(),
-    });
+      onAddTaskClick: allowAddingTasks ? (sectionId) => this.openComposer(sectionId) : undefined,
+      onTreeChange: () => {
+        this.composer?.setSections(this.taskTree.getSections());
+        this.scheduleHeightUpdate();
+        this.scheduleComposerPosition();
+      },
+    }, translate(homey, 'addTask'));
+
+    // The composer is a pop-up over the task list. It lives outside the list, which is re-rendered on every
+    // change; inside it, focus and the on-screen keyboard would be lost.
+    if (allowAddingTasks) {
+      this.composer = new TaskComposer({
+        homey,
+        quickAdd: this.settings.useQuickAdd === true,
+        showDueDate: true,
+        showPriority: true,
+        showCancel: true,
+        showSuccessMessage: true,
+        onCreated: (task) => this.handleTaskCreated(task),
+        onCancel: () => this.closeComposer(),
+        onLayoutChange: () => this.scheduleHeightUpdate(),
+      });
+      this.domElements.composerSlot.append(this.composer.element);
+
+      // The slot is the dimmed backdrop around the pop-up; tapping it closes the pop-up.
+      this.domElements.composerSlot.addEventListener('click', (event) => {
+        if (event.target === this.domElements.composerSlot) this.closeComposer();
+      });
+    }
 
     if (this.settings.autoAdjustHeight) {
       this.scheduleHeightUpdate(); // when?
     }
+
+    // Follow every size change, including rows that animate open after a render and the composer pop-up.
+    const resizeObserver = new ResizeObserver(() => {
+      this.scheduleHeightUpdate();
+      this.scheduleComposerPosition();
+    });
+    resizeObserver.observe(this.domElements.main);
+    if (this.composer) resizeObserver.observe(this.composer.element);
 
     this.todoistEventQueue = new EventQueue(
       (event) => this.processEvent(event),
@@ -118,6 +164,11 @@ class ProjectWidgetScript {
         const projectData = data as TodoistProjectResponse;
         this.domElements.projectTitle.textContent = projectData.project.name;
         this.taskTree.organize(projectData);
+        this.composer?.setProject(
+          { userId: this.settings.project.userId, id: this.settings.project.id, name: projectData.project.name },
+          this.taskTree.getSections(),
+          this.composer.getTarget()?.section?.id ?? null,
+        );
       })
       .catch((error) => {
         this.showError('Error fetching project data', error?.message, undefined, async () => {
@@ -173,9 +224,15 @@ class ProjectWidgetScript {
         break;
 
       case 'item:added':
-      case 'item:uncompleted':
-        this.taskTree.addTask(message.event_data as TodoistTask);
+      case 'item:uncompleted': {
+        // A task added from this widget is already shown before its webhook event arrives.
+        const task = message.event_data as TodoistTask;
+        if (this.taskTree.hasTask(task.id))
+          this.taskTree.updateTask(task);
+        else
+          this.taskTree.addTask(task);
         break;
+      }
 
       case 'section:added':
       case 'section:unarchived':
@@ -212,12 +269,97 @@ class ProjectWidgetScript {
   }
 
   /**
+   * Opens the composer pop-up over the task list, with the section of the clicked "Add task" row preselected.
+   * Focusing inside the click handler lets mobile webviews open the on-screen keyboard.
+   * @param sectionId The section to add to, or null for tasks without a section.
+   */
+  private openComposer(sectionId: string | null): void {
+    if (!this.composer) return;
+
+    this.homey.hapticFeedback();
+    this.composerOpen = true;
+    this.composerAnchorSectionId = sectionId;
+    this.composer.selectSection(sectionId);
+
+    // Place the pop-up at the tapped row right away; later moves (as tasks are added) slide smoothly.
+    const { composerSlot: slotEl } = this.domElements;
+    slotEl.hidden = false;
+    slotEl.classList.add('placing');
+    this.positionComposer();
+    window.requestAnimationFrame(() => slotEl.classList.remove('placing'));
+
+    this.composer.focus();
+    this.scheduleHeightUpdate();
+  }
+
+  /**
+   * Moves the pop-up onto the "Add task" row it was opened from, so on a long list it shows where the user tapped.
+   * Tasks added to that section appear just above the row, so they stay visible above the pop-up.
+   * Near the bottom of the widget the pop-up is moved up just enough to fit.
+   */
+  private positionComposer(): void {
+    if (!this.composer || !this.composerOpen) return;
+
+    const { composerSlot: slotEl, project: projectEl } = this.domElements;
+    const card = this.composer.element;
+    const anchor = projectEl.hidden
+      ? null
+      : projectEl.querySelector<HTMLElement>(`.add-task[data-section-id="${this.composerAnchorSectionId ?? ''}"]`);
+    const inset = parseFloat(window.getComputedStyle(slotEl).paddingTop) || 0;
+    const anchorTop = anchor ? anchor.getBoundingClientRect().top : inset;
+    const maxTop = window.innerHeight - card.offsetHeight - inset;
+    const top = Math.max(inset, Math.min(anchorTop, maxTop));
+    card.style.marginTop = `${Math.round(top - inset)}px`;
+  }
+
+  /**
+   * Repositions the pop-up on the next animation frame, e.g. after the list changed below it.
+   */
+  private scheduleComposerPosition(): void {
+    if (!this.composerOpen || this.composerPositionFrame !== null) return;
+    this.composerPositionFrame = window.requestAnimationFrame(() => {
+      this.composerPositionFrame = null;
+      this.positionComposer();
+    });
+  }
+
+  /**
+   * Discards what was typed and closes the pop-up.
+   */
+  private closeComposer(): void {
+    if (!this.composer) return;
+
+    this.composerOpen = false;
+    this.composer.endSession();
+    (document.activeElement as HTMLElement | null)?.blur();
+    this.domElements.composerSlot.hidden = true;
+    this.scheduleHeightUpdate();
+  }
+
+  /**
+   * Shows a task created from the widget right away instead of waiting for its webhook event.
+   * @param task The task returned by Todoist.
+   */
+  private handleTaskCreated(task: CreatedTask): void {
+    if (String(task.project_id) !== String(this.settings.project.id) || this.taskTree.hasTask(task.id))
+      return;
+
+    this.taskTree.addTask(task);
+  }
+
+  /**
    * Handles the addition animation for a task element when it is added to the DOM.
    * @param element 
    * @param _taskId 
    */
   private handleAdd(element: HTMLElement): void {
     const targetHeight = element.offsetHeight;
+
+    // The list is hidden behind the error message; it shows the task without animating once it is back.
+    if (this.domElements.project.hidden) {
+      element.classList.remove('fading-out');
+      return;
+    }
 
     element.style.minHeight = '0px';
     element.style.maxHeight = '0px';
@@ -234,6 +376,8 @@ class ProjectWidgetScript {
         element.style.maxHeight = '';
         element.style.overflow = '';
         element.removeEventListener('transitionend', onHeightEnd);
+        // With a fixed height the widget itself doesn't resize, so move the pop-up below the grown row here.
+        this.scheduleComposerPosition();
       };
 
       const onHeightEnd = (event: TransitionEvent) => {
@@ -326,6 +470,7 @@ class ProjectWidgetScript {
     errorTechnicalEl.toggleAttribute('hidden', !technical);
 
     projectEl.hidden = true;
+    this.domElements.composerSlot.hidden = true;
     errorEl.hidden = false;
 
     if (onManualRetry) {
@@ -355,6 +500,7 @@ class ProjectWidgetScript {
   private hideError(): void {
     const { project: projectEl, error: errorEl, errorTechnical: errorTechnicalEl, errorRetryButton: errorRetryButtonEl } = this.domElements;
     projectEl.hidden = false;
+    this.domElements.composerSlot.hidden = !this.composerOpen;
     errorEl.hidden = true;
     errorTechnicalEl.textContent = '';
     errorTechnicalEl.hidden = true;
@@ -425,7 +571,13 @@ class ProjectWidgetScript {
     const marginBottom = parseFloat(elementStyles.marginBottom) || 0;
     const paddingTop = parseFloat(bodyStyles.paddingTop) || 0;
     const paddingBottom = parseFloat(bodyStyles.paddingBottom) || 0;
-    const measuredHeight = elementRect.bottom + marginBottom + paddingBottom;
+    let measuredHeight = elementRect.bottom + marginBottom + paddingBottom;
+    // The pop-up floats over the list, so the widget must also be tall enough for it.
+    // Uses the same margin as positionComposer, so moving the pop-up never makes the widget grow a little more.
+    if (this.composerOpen) {
+      const inset = parseFloat(window.getComputedStyle(this.domElements.composerSlot).paddingBottom) || 0;
+      measuredHeight = Math.max(measuredHeight, this.composer.element.getBoundingClientRect().bottom + inset);
+    }
     const minimumHeight = paddingTop;
 
     const nextHeight = Math.ceil(Math.max(measuredHeight, minimumHeight));

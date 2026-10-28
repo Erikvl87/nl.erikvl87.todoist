@@ -5,3 +5,5 @@ build
 
 # Added by Homey CLI
 /.homeybuild/
+# Generated copies of widgets-shared/ (see scripts/sync-widget-shared.mjs)
+widgets/*/public/shared/

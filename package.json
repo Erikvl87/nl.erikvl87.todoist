@@ -6,7 +6,7 @@
     "start": "npx npm-run-all --parallel watch:app watch:widgets",
     "watch:app": "nodemon --config nodemon.app.json -V",
     "watch:widgets": "nodemon --config nodemon.widgets.json -V",
-    "build": "tsc"
+    "build": "node scripts/sync-widget-shared.mjs && tsc"
   },
   "dependencies": {
     "homey-oauth2app": "^3.5.0"

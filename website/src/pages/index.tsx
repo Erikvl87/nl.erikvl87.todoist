@@ -20,7 +20,7 @@ function HomepageHeader() {
             </Heading>
             <p className="hero__subtitle">{siteConfig.tagline}</p>
             <p className={styles.heroDescription}>
-              Todoist for Homey brings your <a href="https://todoist.com/">Todoist</a> task management into your <a href="https://homey.app/">Homey</a> smart home. Create tasks, respond to task events, fetch project data, and display task lists on your Homey dashboard, all through Homey's flow system and widgets.
+              Todoist for Homey brings your <a href="https://todoist.com/">Todoist</a> task management into your <a href="https://homey.app/">Homey</a> smart home. Create tasks, respond to task events, fetch project data, and view and add tasks on your Homey dashboard, all through Homey's flow system and widgets.
             </p>
             <div className={styles.buttons}>
               <Link

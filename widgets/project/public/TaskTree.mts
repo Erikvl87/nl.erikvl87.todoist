@@ -57,6 +57,8 @@ type TaskTreeHooks = {
   onSectionRemove?: (element: HTMLElement, done: () => void) => void;
   /** Called when a task checkbox is clicked. */
   onTaskCheckboxClick?: (taskId: string, element: HTMLElement) => void;
+  /** Called when the "Add task" row of a section (null for tasks without a section) is clicked. */
+  onAddTaskClick?: (sectionId: string | null) => void;
   /** Called after the tree has finished rendering. */
   onTreeChange?: () => void;
 };
@@ -127,6 +129,16 @@ class TaskStore {
   public addTask(task: TodoistTask): void {
     if (this.tasks.has(task.id)) throw new Error(`Task with ID ${task.id} already exists.`);
     this.tasks.set(task.id, { ...task });
+  }
+
+  /** Returns true if the task is in the store. */
+  public hasTask(taskId: string): boolean {
+    return this.tasks.has(taskId);
+  }
+
+  /** Returns the sections ordered as Todoist shows them. */
+  public getSections(): SectionRecord[] {
+    return Array.from(this.sections.values()).sort((a, b) => a.section_order - b.section_order);
   }
 
   /** Adds or updates a section. */
@@ -248,14 +260,16 @@ class TaskView {
   private pendingSectionAddIds: Set<string> = new Set();
   private hooks?: TaskTreeHooks;
   private allowCompletingTasks: boolean;
+  private addTaskLabel?: string;
 
   /**
    * Sets up the view with a root element reference.
    */
-  constructor(rootElement: HTMLElement, hooks?: TaskTreeHooks, allowCompletingTasks = true) {
+  constructor(rootElement: HTMLElement, hooks?: TaskTreeHooks, allowCompletingTasks = true, addTaskLabel?: string) {
     this.rootElement = rootElement;
     this.hooks = hooks;
     this.allowCompletingTasks = allowCompletingTasks;
+    this.addTaskLabel = addTaskLabel;
   }
 
   /** Marks tasks that should render hidden initially (for enter animations). */
@@ -279,6 +293,7 @@ class TaskView {
     const unsectionedContainer = document.createElement('div');
     unsectionedContainer.className = 'tasks';
     this.appendTasks(data.unsectioned, unsectionedContainer);
+    this.appendAddTaskRow(null, unsectionedContainer);
     fragment.appendChild(unsectionedContainer);
 
     data.sections.forEach((section) => {
@@ -305,9 +320,24 @@ class TaskView {
     const tasks = document.createElement('div');
     tasks.className = 'tasks';
     this.appendTasks(section.tasks, tasks);
+    this.appendAddTaskRow(section.id, tasks);
 
     wrapper.append(title, tasks);
     return wrapper;
+  }
+
+  /** Appends an "Add task" row that opens the composer for this section, when adding tasks is enabled. */
+  private appendAddTaskRow(sectionId: string | null, container: HTMLElement): void {
+    const onAddTaskClick = this.hooks?.onAddTaskClick;
+    if (!onAddTaskClick || !this.addTaskLabel) return;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'add-task';
+    button.dataset.sectionId = sectionId ?? '';
+    button.textContent = this.addTaskLabel;
+    button.addEventListener('click', () => onAddTaskClick(sectionId));
+    container.appendChild(button);
   }
 
   /** Appends task elements (and their children) into a container. */
@@ -399,9 +429,19 @@ export class TaskTree {
   /**
    * Initializes the TaskTree facade with a root element.
    */
-  constructor(rootElement: HTMLElement, allowCompletingTasks: boolean, hooks?: TaskTreeHooks) {
-    this.view = new TaskView(rootElement, hooks, allowCompletingTasks);
+  constructor(rootElement: HTMLElement, allowCompletingTasks: boolean, hooks?: TaskTreeHooks, addTaskLabel?: string) {
+    this.view = new TaskView(rootElement, hooks, allowCompletingTasks, addTaskLabel);
     this.hooks = hooks;
+  }
+
+  /** Returns true if the task is already shown (e.g. added by the widget before its webhook event arrived). */
+  public hasTask(taskId: string): boolean {
+    return this.store.hasTask(taskId);
+  }
+
+  /** Returns the project's sections in display order. */
+  public getSections(): Array<{ id: string; name: string }> {
+    return this.store.getSections().map(({ id, name }) => ({ id, name }));
   }
 
   /** Ingests a full project payload and renders it. */

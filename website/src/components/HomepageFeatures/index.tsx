@@ -28,11 +28,11 @@ const FeatureList: FeatureItem[] = [
     ),
   },
   {
-    title: 'Dashboard Widget',
+    title: 'Dashboard Widgets',
     description: (
       <>
-        Display your Todoist project tasks directly on your Homey dashboard with a 
-        live-updating widget that supports task completion.
+        See your Todoist projects on your Homey dashboard with live updates, tick off
+        tasks, and add new ones to any project or section right from the dashboard.
       </>
     ),
   },

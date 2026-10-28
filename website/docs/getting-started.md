@@ -57,7 +57,8 @@ Your Todoist account is now connected to Homey. You can:
 * React to task events like completions using trigger flow cards
 * Check if tasks exist using condition flow cards
 * Fetch project tasks and use them in advanced flows
-* Display tasks on your Homey dashboard using the Project widget
+* Display, complete and add tasks on your Homey dashboard using the [Project widget](widget.md)
+* Add tasks to any project and section from your dashboard using the [Add task widget](add-task-widget.md)
 
 :::tip
 

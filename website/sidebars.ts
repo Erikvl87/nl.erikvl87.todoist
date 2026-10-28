@@ -7,6 +7,7 @@ const sidebars: SidebarsConfig = {
     'getting-started',
     'flow-cards',
     'widget',
+    'add-task-widget',
     'homeyscript-api',
     'troubleshooting',
     'changelog',
