@@ -341,12 +341,6 @@ main {
     background-color: var(--homey-background-color, #fff);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
     animation: modal-enter 0.25s ease-out;
-    transition: margin-top 0.3s ease;
-  }
-
-  /* No slide when the pop-up opens; it appears in place at the tapped row. */
-  &.placing .composer {
-    transition: none;
   }
 }
 

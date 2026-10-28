@@ -33,9 +33,6 @@ class ProjectWidgetScript {
   private taskTree: TaskTree;
   private composer: TaskComposer | null = null;
   private composerOpen = false;
-  /** Section of the "Add task" row the pop-up was opened from; the pop-up stays next to that row. */
-  private composerAnchorSectionId: string | null = null;
-  private composerPositionFrame: number | null = null;
   private eventQueue: any[] = [];
   private processingQueue = false;
   private todoistEventQueue: EventQueue;
@@ -90,7 +87,6 @@ class ProjectWidgetScript {
       onTreeChange: () => {
         this.composer?.setSections(this.taskTree.getSections());
         this.scheduleHeightUpdate();
-        this.scheduleComposerPosition();
       },
     }, translate(homey, 'addTask'));
 
@@ -118,15 +114,11 @@ class ProjectWidgetScript {
 
     if (this.settings.autoAdjustHeight) {
       this.scheduleHeightUpdate(); // when?
+      // Follow every size change, including rows that animate open after a render and the composer pop-up.
+      const resizeObserver = new ResizeObserver(() => this.scheduleHeightUpdate());
+      resizeObserver.observe(this.domElements.main);
+      if (this.composer) resizeObserver.observe(this.composer.element);
     }
-
-    // Follow every size change, including rows that animate open after a render and the composer pop-up.
-    const resizeObserver = new ResizeObserver(() => {
-      this.scheduleHeightUpdate();
-      this.scheduleComposerPosition();
-    });
-    resizeObserver.observe(this.domElements.main);
-    if (this.composer) resizeObserver.observe(this.composer.element);
 
     this.todoistEventQueue = new EventQueue(
       (event) => this.processEvent(event),
@@ -278,49 +270,31 @@ class ProjectWidgetScript {
 
     this.homey.hapticFeedback();
     this.composerOpen = true;
-    this.composerAnchorSectionId = sectionId;
     this.composer.selectSection(sectionId);
-
-    // Place the pop-up at the tapped row right away; later moves (as tasks are added) slide smoothly.
-    const { composerSlot: slotEl } = this.domElements;
-    slotEl.hidden = false;
-    slotEl.classList.add('placing');
-    this.positionComposer();
-    window.requestAnimationFrame(() => slotEl.classList.remove('placing'));
-
+    this.domElements.composerSlot.hidden = false;
+    this.positionComposer(sectionId);
     this.composer.focus();
     this.scheduleHeightUpdate();
   }
 
   /**
-   * Moves the pop-up onto the "Add task" row it was opened from, so on a long list it shows where the user tapped.
-   * Tasks added to that section appear just above the row, so they stay visible above the pop-up.
-   * Near the bottom of the widget the pop-up is moved up just enough to fit.
+   * Places the pop-up on the "Add task" row it was opened from, so on a long list it shows where the user tapped.
+   * It stays there while the list grows underneath it as tasks are added.
+   * With auto height the widget grows to fit the pop-up at its row (see updateWidgetHeight); a fixed-height widget
+   * can't grow, so near its bottom the pop-up is moved up just enough to fit.
+   * @param sectionId The section of the tapped row, or null for tasks without a section.
    */
-  private positionComposer(): void {
-    if (!this.composer || !this.composerOpen) return;
-
+  private positionComposer(sectionId: string | null): void {
     const { composerSlot: slotEl, project: projectEl } = this.domElements;
     const card = this.composer.element;
     const anchor = projectEl.hidden
       ? null
-      : projectEl.querySelector<HTMLElement>(`.add-task[data-section-id="${this.composerAnchorSectionId ?? ''}"]`);
+      : projectEl.querySelector<HTMLElement>(`.add-task[data-section-id="${sectionId ?? ''}"]`);
     const inset = parseFloat(window.getComputedStyle(slotEl).paddingTop) || 0;
     const anchorTop = anchor ? anchor.getBoundingClientRect().top : inset;
-    const maxTop = window.innerHeight - card.offsetHeight - inset;
+    const maxTop = this.settings.autoAdjustHeight ? Infinity : window.innerHeight - card.offsetHeight - inset;
     const top = Math.max(inset, Math.min(anchorTop, maxTop));
     card.style.marginTop = `${Math.round(top - inset)}px`;
-  }
-
-  /**
-   * Repositions the pop-up on the next animation frame, e.g. after the list changed below it.
-   */
-  private scheduleComposerPosition(): void {
-    if (!this.composerOpen || this.composerPositionFrame !== null) return;
-    this.composerPositionFrame = window.requestAnimationFrame(() => {
-      this.composerPositionFrame = null;
-      this.positionComposer();
-    });
   }
 
   /**
@@ -376,8 +350,6 @@ class ProjectWidgetScript {
         element.style.maxHeight = '';
         element.style.overflow = '';
         element.removeEventListener('transitionend', onHeightEnd);
-        // With a fixed height the widget itself doesn't resize, so move the pop-up below the grown row here.
-        this.scheduleComposerPosition();
       };
 
       const onHeightEnd = (event: TransitionEvent) => {

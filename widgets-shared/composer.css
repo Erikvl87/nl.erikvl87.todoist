@@ -75,11 +75,16 @@
     color: var(--composer-muted);
   }
 
+  /* One row that never wraps, so chips don't jump between rows when a label changes; long names are shortened. */
   & .composer-chips {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--homey-su-2);
     margin-top: var(--homey-su-3);
+
+    & > .composer-chip {
+      flex: 0 1 auto;
+    }
   }
 
   & .composer-chip {
@@ -143,6 +148,15 @@
     font-size: 16px;
     cursor: pointer;
     appearance: none;
+  }
+
+  /* Only the flag until a priority is chosen, like the Todoist app; it never shrinks. */
+  & .composer-chips > .composer-chip-priority {
+    flex-shrink: 0;
+
+    &:not(.is-set) .composer-chip-label {
+      display: none;
+    }
   }
 
   & .composer-chip-priority {

@@ -49,7 +49,7 @@ The widget sizes itself to fit the form, so there is no height setting.
    * **Date**: a due date in your own words, such as *tomorrow 9am* or *every monday*. Todoist reads it in the language of your Homey.
    * **Project**: tap it to pick another project. If you have more than one Todoist account, the projects are grouped by account. The section picker then shows the sections of that project.
    * **Section**: tap it to pick a section, or choose **No section**. This button is hidden for projects without sections.
-   * **Priority**: tap the flag to pick P1 to P4. Until you pick one, it shows *Priority* and Todoist uses its default, P4.
+   * **Priority**: tap the flag to pick P1 to P4. Until you pick one, it shows just the flag and Todoist uses its default, P4.
 3. Tap **Add task** or the Enter key on the keyboard. The button stays disabled until you've typed a task name.
 
 The button briefly shows **✓ Added**, and the form is cleared for the next task. The project and section stay as they are, so you can add several tasks to the same place in a row.

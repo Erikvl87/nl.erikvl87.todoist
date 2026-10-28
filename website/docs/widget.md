@@ -60,11 +60,11 @@ When **Allow adding tasks from widget** is enabled, every section ends with an *
 2. Type the task name.
 3. Optionally fill in:
    * **Date**: a due date in your own words, such as *tomorrow 9am* or *every monday*. Todoist reads it in the language of your Homey.
-   * **Priority**: tap the flag to pick P1 to P4. Until you pick one, it shows *Priority* and Todoist uses its default, P4.
+   * **Priority**: tap the flag to pick P1 to P4. Until you pick one, it shows just the flag and Todoist uses its default, P4.
    * **Section**: tap it to move the task to another section, or choose **No section**.
 4. Tap **Add task** or the Enter key on the keyboard.
 
-The button briefly shows **✓ Added**, and the task appears in the list behind the pop-up straight away. The pop-up stays open with the same section selected, so you can type the next task right away. As tasks are added, the pop-up moves down with its row, so the tasks you just added stay visible above it.
+The button briefly shows **✓ Added**, and the task is added to the list behind the pop-up straight away. The pop-up stays open, in the same place and with the same section selected, so you can type the next task right away. With **Auto adjust height** enabled, the widget grows while the pop-up is open if the pop-up doesn't fit below the row.
 
 To close the pop-up, tap **Cancel** or anywhere outside it. Once you have added a task, the button reads **Close** instead: closing never undoes tasks that were added. Anything typed but not yet added is discarded.
 
